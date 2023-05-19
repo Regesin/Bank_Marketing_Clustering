@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Visualization</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div> 
+        <center><h1>Bank Marketing Data Clusters Dashboard</h1></center>
+    </div>
+
+    <div>
+        <form method="POST" action="/">
+            {{ form.csrf_token }}
+            {{ form.input_number.label }} {{ form.input_number }}
+            {{ form.submit }}
+        </form>
+    </div>    
+
+    <div>
+        <h2>Customers Per Cluster</h2>
+        {{ plot_count_clusters_html|safe }}
+    </div>
+    <div>
+        <h2>Count of Age by Clusters Category</h2>
+        {{ plot_count_cluster_by_age_html|safe }}
+    </div>
+
+    <div>
+        <h2>Count of Job by Clusters Category</h2>
+        {{ plot_count_clusters_by_job_html|safe }}
+    </div>
+
+    <div>
+        <h2>Count of Marital by Clusters Category</h2>
+        {{ plot_count_clusters_by_marital_html|safe }}
+    </div>
+
+
+    <div>
+        <h2>Count of Education by Clusters Category</h2>
+        {{ plot_count_clusters_by_education_html|safe }}
+    </div>
+
+    <div>
+        <h2>Count of Default by Clusters Category</h2>
+        {{ plot_count_clusters_by_default_html|safe }}
+    </div>
+
+    <div>
+        <h2>Count of Housing by Clusters Category</h2>
+        {{ plot_count_clusters_by_housing_html|safe }}
+    </div>
+
+    <div>
+        <h2>Count of Loan Status by Clusters Category</h2>
+        {{ plot_count_clusters_by_y_html|safe }}
+    </div>
+
+    <div>
+        <h2>Cluster Tree</h2>
+        {{ plot_cluster_tree_html|safe }}
+    </div>
+
+
+    <div>
+        <h2>Parallel Coordinates Plot</h2>
+        {{ plot_parallel_html|safe }}
+    </div>
+</body>
+</html>

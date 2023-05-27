@@ -2,6 +2,16 @@ import pandas as pd
 import plotly.graph_objects as go
 
 def stacked_bar_chart_marital(df):
+    """
+    Generate a stacked bar chart showing the distribution of clusters across different marital statuses.
+
+    Args:
+        df (DataFrame): Input DataFrame containing the 'marital' and 'cluster' columns.
+
+    Returns:
+        str: HTML representation of the stacked bar chart.
+
+    """
     # Group the dataframe by marital and cluster
     df_grouped = df.groupby(['marital', 'cluster']).size().unstack()
 

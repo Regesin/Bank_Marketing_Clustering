@@ -2,6 +2,16 @@ import pandas as pd
 import plotly.graph_objects as go
 
 def stacked_bar_chart_education(df):
+    """
+    Generate a stacked bar chart showing the distribution of clusters across different education categories.
+
+    Args:
+        df (DataFrame): Input DataFrame containing the 'education' and 'cluster' columns.
+
+    Returns:
+        str: HTML representation of the stacked bar chart.
+
+    """
     # Group the dataframe by education and cluster
     df_grouped = df.groupby(['education', 'cluster']).size().unstack()
 

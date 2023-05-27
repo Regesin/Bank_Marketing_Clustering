@@ -2,9 +2,18 @@ import pandas as pd
 import plotly.graph_objects as go
 
 def stacked_bar_chart_job(df):
+    """
+    Generate a stacked bar chart showing the distribution of clusters across different job categories.
+
+    Args:
+        df (DataFrame): Input DataFrame containing the 'job' and 'cluster' columns.
+
+    Returns:
+        str: HTML representation of the stacked bar chart.
+
+    """
     # Group the dataframe by job and cluster
     df_grouped = df.groupby(['job', 'cluster']).size().unstack()
-
 
     # Create a stacked bar chart
     fig = go.Figure(data=[

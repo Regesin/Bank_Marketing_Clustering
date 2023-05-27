@@ -1,11 +1,12 @@
 # Packages / libraries
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Response, session
 from flask_menu import Menu, register_menu
 from flask_wtf.csrf import CSRFProtect
 from flask_wtf import csrf
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+from wtforms import ValidationError
 import os #provides functions for interacting with the operating system
 import numpy as np 
 import pandas as pd
@@ -35,7 +36,10 @@ from clusterByHousing import stacked_bar_chart_housing
 from clusterByLoanStatus import stacked_bar_chart_y
 from clusterTree import create_cluster_tree
 from parallelCoordinatesPlot import parallel_coordinates_plot
-from KMeansClusteringAlgorithm import DataAnalyzer
+from KMeansClusteringAlgorithm import KMeansClusteringAlgorithm
+from pymongo import MongoClient
+import csv
+from ingestion import MongoDBLoader
 # To install sklearn type "pip install numpy scipy scikit-learn" to the anaconda terminal
 
 # To change scientific numbers to float
@@ -54,6 +58,11 @@ class MyForm(FlaskForm):
     input_number = StringField('Input Number', validators=[DataRequired()])
     input_iterations = 0
     input_iterations = StringField('Input Iterations', validators=[DataRequired()])
+    def validate_input_number(self, field):
+        try:
+            int(field.data)
+        except ValueError:
+            raise ValidationError('Input must be a numeric value.')
     submit = SubmitField('Submit')
 
 
@@ -69,7 +78,10 @@ def index():
     plot_count_clusters_by_housing = None
     plot_count_clusters_by_y = None
     plot_cluster_tree = None
-
+    plot_cluster_tree_1 = None
+    plot_cluster_tree_2 = None
+    total_rows = "Not Calculated"
+    table = None
     form = MyForm()
     if form.validate_on_submit():
         input_number = form.input_number.data
@@ -77,7 +89,7 @@ def index():
         input_iterations = form.input_iterations.data
         input_iterations = int(input_iterations)
         data_path = '/home/arun/Master Of Data Science/Sem 3/Data Mining-CSC6004/Final/GUI/DataSets/bank-additional-full.csv'
-        analyzer = DataAnalyzer(data_path)
+        analyzer = KMeansClusteringAlgorithm(data_path)
         analyzer.import_raw_data()
         analyzer.preprocess_data()
         labels, df = analyzer.cluster_data(max_iterations=input_iterations, centroid_count=input_number)
@@ -88,8 +100,13 @@ def index():
         df = df.drop(['_id', 'duration', 'campaign',
        'pdays', 'previous', 'poutcome', 'emp.var.rate', 'cons.price.idx',
        'cons.conf.idx', 'euribor3m', 'nr.employed'], axis=1)
-        df['cluster'] = labels
-    
+        df['cluster'] = labels        
+        # Convert DataFrame to HTML table
+        table_data = raw_df.head(10)
+        table = table_data.to_html(classes='table table-bordered')
+        
+        # Total Number of Clsuters
+        total_rows = df.shape[0]    
 
         # Bar chart for clusters
         plot_count_clusters = count_clusters(raw_df)
@@ -116,7 +133,7 @@ def index():
         plot_count_clusters_by_y = stacked_bar_chart_y(raw_df)
 
         # Cluster Trees
-        plot_cluster_tree = create_cluster_tree(raw_df)
+        plot_cluster_tree, plot_cluster_tree_1, plot_cluster_tree_2 = create_cluster_tree(raw_df)
 
         #Parallel Coordinates
         plot_parallel = parallel_coordinates_plot(df)
@@ -132,9 +149,16 @@ def index():
     plot_count_clusters_by_housing_html = plot_count_clusters_by_housing,
     plot_count_clusters_by_y_html = plot_count_clusters_by_y,
     plot_cluster_tree_html = plot_cluster_tree,
+    plot_cluster_tree_1_html = plot_cluster_tree_1,
+    plot_cluster_tree_2_html = plot_cluster_tree_2,
+    total_rows=total_rows,
+    table=table,
     form=form
     )
 
+@app.route('/main')
+def main_page():
+    return render_template('main.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

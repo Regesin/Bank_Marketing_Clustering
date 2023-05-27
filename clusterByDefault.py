@@ -2,6 +2,16 @@ import pandas as pd
 import plotly.graph_objects as go
 
 def stacked_bar_chart_default(df):
+    """
+    Generate a stacked bar chart showing the distribution of clusters across different default categories.
+
+    Args:
+        df (DataFrame): Input DataFrame containing the 'default' and 'cluster' columns.
+
+    Returns:
+        str: HTML representation of the stacked bar chart.
+
+    """
     # Group the dataframe by default and cluster
     df_grouped = df.groupby(['default', 'cluster']).size().unstack()
 
